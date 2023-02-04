@@ -1,0 +1,35 @@
+{
+    "name": "ebethus/laravel-ticketbai",
+    "description": "TicketBai Library for Laravel",
+    "type": "library",
+    "require": {
+        "barnetik/ticketbai": "dev-main",
+        "simplesoftwareio/simple-qrcode": "4.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "9.6.x-dev"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "EBethus\\LaravelTicketBAI\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "ashrey",
+            "email": "alberroteran@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "EBethus\\LaravelTicketBAI\\TicketBAIProvider"
+            ],
+            "aliases": {
+                "TicketBAI": "EBethus\\LaravelTicketBAI\\Facade\\TicketBAI"
+            }
+        }
+    }
+}
