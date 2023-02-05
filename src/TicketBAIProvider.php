@@ -26,4 +26,9 @@ class TicketBAIProvider extends ServiceProvider
     {
         return [TicketBAI::class];
     }
+
+    public function boot()
+    {
+        $this->loadMigrationsFrom(__DIR__.'/database');
+    }
 }
