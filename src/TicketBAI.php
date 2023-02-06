@@ -7,6 +7,7 @@ use \Barnetik\Tbai\Fingerprint\Vendor;
 use \Barnetik\Tbai\Subject;
 use \Barnetik\Tbai\ValueObject\Amount;
 use \Barnetik\Tbai\Invoice\Data;
+use \Barnetik\Tbai\Fingerprint\PreviousInvoice;
 
 class TicketBAI
 {
@@ -97,7 +98,14 @@ class TicketBAI
 
         //to do, find previous invoice
         // factura anterior PreviousInvoice;
+        $prev = Invoice::where('issuer', $this->idIssuer)
+                ->orderBy('created_at', 'desc')
+                ->first();
         $prevInvoice = null;
+        if ($prev) {
+            $sentDate = new \Barnetik\Tbai\ValueObject\Date($prev->created_at->format("d-m-Y"));
+            $prevInvoice = new PreviousInvoice($prev->number, $sentDate, $prev->signature, null);
+        }
         return new \Barnetik\Tbai\Fingerprint($this->vendor, $prevInvoice);
         
     }
@@ -213,6 +221,7 @@ class TicketBAI
         $model->path = $disk->putFile('ticketbai', new \Illuminate\Http\File($this->signedFilename));
         $model->issuer = $this->idIssuer;
         $model->number = $this->invoiceNumber;
+        $model->signature = $this->ticketbai->signatureValue();
         $model->save();
         Job\InvoiceSend::dispatch($this);
     }
