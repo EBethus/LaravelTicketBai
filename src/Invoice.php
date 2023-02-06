@@ -1,8 +1,6 @@
 <?php
-namespace EBethus\TicketBAI;
+namespace EBethus\LaravelTicketBAI;
 
-use Barnetik\Tbai\ValueObject\Amount;
-use Barnetik\Tbai\Invoice\Data;
 use Illuminate\Database\Eloquent\Model;
 
 
