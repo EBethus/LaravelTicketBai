@@ -10,3 +10,5 @@
     'appVersion' => '1.0'
 ]
 ```
+
+php artisan migrate

@@ -16,8 +16,9 @@ class CreateInvoiceTable extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->string('path', 255);
-            $table->unisignedInteger('issuer');
+            $table->unsignedInteger('issuer');
             $table->string('number', 255);
+            $table->datetime('sent')->nullable();
             $table->timestamps();
         });
     }
