@@ -166,7 +166,7 @@ class TicketBAI
         $header = $this->simplyfyHeader();
         $fingerprint = $this->getFingerprint();
 
-         $totalInvoice = $this->totalInvoice;
+        $totalInvoice = $this->totalInvoice;
         $vat = new Amount($vatPerc);
         $totalWithOutVat = $totalInvoice*(100-$vatPerc)/100;
         $vatDetail = new \Barnetik\Tbai\Invoice\Breakdown\VatDetail(
@@ -188,7 +188,7 @@ class TicketBAI
             $selfEmployed
         );
 
-        return$this->sign();
+        return $this->sign();
     }
 
     function getCertificate()
@@ -206,7 +206,8 @@ class TicketBAI
     {
         $ticketbai = $this->ticketbai;
         $privateKey = $this->getCertificate();
-        $this->signedFilename = tempnam(sys_get_temp_dir(), 'ticketbai').'.xml';
+        $this->signedFilename = storage_path("ticketbai{$this->invoiceNumber }.xml");
+        \Log::debug('Signed file: '.$this->signedFilename);
         $ticketbai->sign($privateKey, $this->certPassword, $this->signedFilename);
         $qr = new \Barnetik\Tbai\Qr($ticketbai, true);
         $this->save();
@@ -217,6 +218,7 @@ class TicketBAI
     {
         $this->model = new Invoice();
         $model = $this->model;
+        \Log::debug($this->signedFilename);
         $disk = \Storage::disk($this->disk);
         $model->path = $disk->putFile('ticketbai', new \Illuminate\Http\File($this->signedFilename));
         $model->issuer = $this->idIssuer;
@@ -234,5 +236,11 @@ class TicketBAI
     function getTBAI()
     {
         return $this->ticketbai;
+    }
+
+    function clearFile(){
+        if (is_readable($this->signedFilename)) {
+            unlink($this->signedFilename);
+        }
     }
 }

@@ -19,6 +19,7 @@ class CreateInvoiceTable extends Migration
             $table->unsignedInteger('issuer');
             $table->string('number', 255);
             $table->string('signature', 100);
+            $table->string('status', 1024)->nullable();
             $table->datetime('sent')->nullable();
             $table->timestamps();
         });
