@@ -36,6 +36,7 @@ class InvoiceSend implements ShouldQueue
     public function handle()
     {
         $ticketbai = $this->ticketbai;
+        $model = $ticketbai->copySignatureOnLocal();
         $tbai = $ticketbai->getTBAI();
         $privateKey = $ticketbai->getCertificate();
         $certPassword = $ticketbai->getCertPassword();

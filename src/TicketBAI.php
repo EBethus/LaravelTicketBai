@@ -241,6 +241,12 @@ class TicketBAI
         Job\InvoiceSend::dispatch($this);
     }
 
+    function copySignatureOnLocal()
+    {
+        $disk = Storage::disk($this->disk);
+        $disk->copy($this->model->path, $this->signedFilename);
+    }
+
     function getModel()
     {
         return $this->model;
