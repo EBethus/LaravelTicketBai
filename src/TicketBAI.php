@@ -75,6 +75,12 @@ class TicketBAI
      */
     protected $subject;
 
+    /**
+     * TicketBAI object
+     * @var \Barnetik\Tbai\TicketBai
+     */
+    protected $ticketbai;
+
     public function __construct(array $config = [])
     {
         if (!empty($config)) {
@@ -150,6 +156,7 @@ class TicketBAI
             $amount = $i->toArray();
             return $a + (float) $amount['totalAmount'];
         }, 0);
+        // TODO Fixec concept
         $data = new Data('factura Vivietix', new Amount($this->totalInvoice), [Data::VAT_REGIME_01]);
         foreach($this->items as $i){
             $data->addDetail($i);
