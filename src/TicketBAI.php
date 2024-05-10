@@ -1,6 +1,8 @@
 <?php
 namespace EBethus\LaravelTicketBAI;
 
+use Illuminate\Support\Facades\Storage;
+
 use \Barnetik\Tbai\Invoice\Breakdown\NationalSubjectNotExemptBreakdownItem;
 
 use \Barnetik\Tbai\Fingerprint\Vendor;
@@ -82,6 +84,10 @@ class TicketBAI
             $appVersion = $config['appVersion'];
             $this->certPassword = $config['certPassword'];
             $this->setVendor($license, $nif, $appName, $appVersion);
+
+            if ($config['disk']) {
+                $this->disk = $config['disk'];
+            }
         }
     }
 
@@ -219,7 +225,7 @@ class TicketBAI
         $this->model = new Invoice();
         $model = $this->model;
         \Log::debug($this->signedFilename);
-        $disk = \Storage::disk($this->disk);
+        $disk = Storage::disk($this->disk);
         $model->path = $disk->putFile('ticketbai', new \Illuminate\Http\File($this->signedFilename));
         $model->issuer = $this->idIssuer;
         $model->number = $this->invoiceNumber;
