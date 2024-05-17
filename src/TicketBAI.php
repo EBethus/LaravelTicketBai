@@ -19,7 +19,7 @@ class TicketBAI
      */
     protected $vendor;
 
-    protected $itens = [];
+    protected $items = [];
 
     /**
      * Certificate's Password
@@ -80,6 +80,12 @@ class TicketBAI
      * @var \Barnetik\Tbai\TicketBai
      */
     protected $ticketbai;
+
+    /**
+     * VAT percentage
+     * @var float
+     */
+    protected $vatPerc;
 
     public function __construct(array $config = [])
     {
@@ -164,24 +170,37 @@ class TicketBAI
         return $data;
     }
 
+    function setVat($vatPerc)
+    {
+        $this->vatPerc = $vatPerc;
+    }
+
     function add($desc, $unitPrice, $q, $discount = null)
     {
-        $unitAmount = new Amount($unitPrice, 12, 8);
+        if (!is_numeric($unitPrice) || !is_numeric($q)) {
+            throw new \RuntimeException('Unit price and quantity must be numeric');
+        }
+        
+        if($this->vatPerc === null) {
+            throw new \RuntimeException('VAT percentage not set');
+        }
+        // debo colocar el valor sin IVA
+        $unitAmount = new Amount($unitPrice*(100-$this->vatPerc)/100, 12, 8);
         $quantity = new Amount($q);
         $disc = $discount ? new Amount($discount) : null ;
         $total =  new Amount($unitPrice * $q - $discount ?? 0);
         $this->items[] = new \Barnetik\Tbai\Invoice\Data\Detail($desc, $unitAmount,  $quantity, $total, $disc);
     }
 
-    function invoice($vatPerc, $territory)
+    function invoice($territory)
     {
         $data = $this->getData();
         $header = $this->simplyfyHeader();
         $fingerprint = $this->getFingerprint();
 
         $totalInvoice = $this->totalInvoice;
-        $vat = new Amount($vatPerc);
-        $totalWithOutVat = $totalInvoice*(100-$vatPerc)/100;
+        $vat = new Amount($this->vatPerc);
+        $totalWithOutVat = $totalInvoice*(100-$this->vatPerc)/100;
         $vatDetail = new \Barnetik\Tbai\Invoice\Breakdown\VatDetail(
             new Amount($totalWithOutVat),
             $vat,
