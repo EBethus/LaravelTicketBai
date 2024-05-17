@@ -242,8 +242,9 @@ class TicketBAI
         \Log::debug('Signed file: '.$this->signedFilename);
         $ticketbai->sign($privateKey, $this->certPassword, $this->signedFilename);
         $qr = new \Barnetik\Tbai\Qr($ticketbai, true);
+        $qrURL = $qr->qrUrl();
         $this->save();
-        return $qr->qrUrl();
+        return $qrURL;
     }
 
     function save()
@@ -257,13 +258,14 @@ class TicketBAI
         $model->number = $this->invoiceNumber;
         $model->signature = $this->ticketbai->signatureValue();
         $model->save();
+        $this->clearFile();
         Job\InvoiceSend::dispatch($this);
     }
 
     function copySignatureOnLocal()
     {
         $disk = Storage::disk($this->disk);
-        $disk->copy($this->model->path, $this->signedFilename);
+        file_put_contents($this->signedFilename, $disk->get($this->model->path));
     }
 
     function getModel()
