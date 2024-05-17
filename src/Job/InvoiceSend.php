@@ -50,6 +50,7 @@ class InvoiceSend implements ShouldQueue
             $model->sent = date('Y-m-d H:i:s');
             $ticketbai->clearFile();
         } else {
+            // Fixed error
             $model->status = $result->content();
         }
         $model->save();
