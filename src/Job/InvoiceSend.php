@@ -43,16 +43,22 @@ class InvoiceSend implements ShouldQueue
         $debug = config('app.debug');
         $test = !\App::environment('production');
         $api = \Barnetik\Tbai\Api::createForTicketBai($tbai, $test, $debug);
-        $result = $api->submitInvoice($tbai, $privateKey, $certPassword);
+        try {
+            $result = $api->submitInvoice($tbai, $privateKey, $certPassword);
+        } catch (\Exception $e) {
+            $data  = file_get_contents($model->path);
+            $exception = new \Exception("$data\n\n".$e->getMessage());
+            $this->fail($exception);
+        }
 
         $model = $ticketbai->getModel();
         if($result->isCorrect()){
             $model->sent = date('Y-m-d H:i:s');
             $ticketbai->clearFile();
+            $model->save();
         } else {
-            // Fixed error
-            $model->status = $result->content();
+            $info = $result->content();
+            \Log::error($info);
         }
-        $model->save();
     }
 }
