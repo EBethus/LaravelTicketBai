@@ -153,7 +153,7 @@ class TicketBAI
         return \Barnetik\Tbai\Invoice\Header::createSimplified($invoiceNumber, $date, $time, $serie);
     }
 
-    protected function getData()
+    protected function getData($description)
     {
         if(empty($this->items)) {
             throw new \RuntimeException('Not item present');
@@ -163,7 +163,7 @@ class TicketBAI
             return $a + (float) $amount['totalAmount'];
         }, 0);
         // TODO Fixec concept
-        $data = new Data('factura Vivietix', new Amount($this->totalInvoice), [Data::VAT_REGIME_01]);
+        $data = new Data($description, new Amount($this->totalInvoice), [Data::VAT_REGIME_01]);
         foreach($this->items as $i){
             $data->addDetail($i);
         }
@@ -192,9 +192,9 @@ class TicketBAI
         $this->items[] = new \Barnetik\Tbai\Invoice\Data\Detail($desc, $unitAmount,  $quantity, $total, $disc);
     }
 
-    function invoice($territory)
+    function invoice($territory, $description)
     {
-        $data = $this->getData();
+        $data = $this->getData($description);
         $header = $this->simplyfyHeader();
         $fingerprint = $this->getFingerprint();
 
