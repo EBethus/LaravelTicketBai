@@ -87,6 +87,13 @@ class TicketBAI
      */
     protected $vatPerc;
 
+    /**
+     * Data extra of the invoice
+     * @var Data
+     */
+
+    protected $data = null;
+
     public function __construct(array $config = [])
     {
         if (!empty($config)) {
@@ -257,6 +264,7 @@ class TicketBAI
         $model->issuer = $this->idIssuer;
         $model->number = $this->invoiceNumber;
         $model->signature = $this->ticketbai->signatureValue();
+        $model->data = $this->data;
         $model->save();
         $this->clearFile();
         Job\InvoiceSend::dispatch($this);
@@ -276,6 +284,11 @@ class TicketBAI
     function getTBAI()
     {
         return $this->ticketbai;
+    }
+
+    function data(mixed $data)
+    {
+        $this->data = $data;
     }
 
     function clearFile(){
